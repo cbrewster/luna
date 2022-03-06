@@ -7,6 +7,10 @@ const luaDoStringAsync = promisify(luaDoString);
 type LuaValue = null | string | number | LuaTable;
 
 function convertLua(val: any): LuaValue {
+    if (val == null) {
+        return null;
+    }
+    
     // TODO: Handle other things than just tables...
     if (typeof val === 'object') {
         return new LuaTable(val);

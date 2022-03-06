@@ -235,6 +235,7 @@ enum LuaValue {
     Number(f64),
     String(String),
     Table(LuaTableHandle),
+    Unsupported,
 }
 
 impl LuaValue {
@@ -248,11 +249,7 @@ impl LuaValue {
             rlua::Value::Table(table) => LuaValue::Table(ctx.table_handle(table)),
 
             // TODO: The rest of em!
-            rlua::Value::LightUserData(_) => todo!(),
-            rlua::Value::Function(_) => todo!(),
-            rlua::Value::Thread(_) => todo!(),
-            rlua::Value::UserData(_) => todo!(),
-            rlua::Value::Error(_) => todo!(),
+            _ => LuaValue::Unsupported,
         }
     }
 }
@@ -270,7 +267,8 @@ impl LuaValue {
                 let typ = cx.string("table");
                 obj.set(cx, "__type", typ)?;
                 obj.upcast()
-            }
+            },
+            LuaValue::Unsupported => cx.throw_error("unsupported type")?,
         })
     }
 }

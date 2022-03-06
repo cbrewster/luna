@@ -13,5 +13,8 @@ const { Lua, LuaTable } = require('../');
         });
     });
 
+    const nil = await lua.doString("nil");
+    console.log('nil:', nil);
+
     lua.close();
 })();
