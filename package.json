@@ -1,6 +1,6 @@
 {
   "name": "@cbrewster/luna",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Node.js bindings to Lua",
   "license": "MIT",
   "author": {
@@ -11,8 +11,8 @@
   "module": "dist/mjs/index.js",
   "exports": {
     ".": {
-      "import": "./dist/mjs/index.js",
-      "require": "./dist/cjs/index.js"
+      "import": "./mjs/index.js",
+      "require": "./cjs/index.js"
     }
   },
   "scripts": {
