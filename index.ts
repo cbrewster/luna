@@ -1,6 +1,6 @@
 const { promisify } = require("util");
 
-const { luaNew, luaClose, luaDoString, luaTableForEach, luaTableToString } = require("./index.node");
+const { luaNew, luaClose, luaDoString, luaTableForEach, luaTableToString } = require("../bin-package/index.node");
 
 const luaDoStringAsync = promisify(luaDoString);
 

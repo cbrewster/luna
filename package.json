@@ -14,7 +14,7 @@
     "build-release": "cargo-cp-artifact -nc ./bin-package/index.node -- cargo build --message-format=json-render-diagnostics --release && tsc",
     "install": "npm run build-release",
     "test": "cargo test",
-    "clean": "rm -rf lib target dist bin-package build",
+    "clean": "rm -rf lib target dist bin-package build"
   },
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.8"
