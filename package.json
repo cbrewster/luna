@@ -1,6 +1,6 @@
 {
   "name": "@cbrewster/luna",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Node.js bindings to Lua",
   "license": "MIT",
   "author": {
@@ -15,7 +15,6 @@
     "install": "npm run build-release",
     "test": "cargo test",
     "clean": "rm -rf lib target dist bin-package build",
-    "publish": "node publish.js"
   },
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.8"
