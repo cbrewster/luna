@@ -1,6 +1,9 @@
 const { promisify } = require("util");
 
-const { luaNew, luaClose, luaDoString, luaTableForEach, luaTableToString } = require("../bin-package/index.node");
+const binary = require('node-pre-gyp');
+const path = require('path');
+const binding_path = binary.find(path.resolve(path.join(__dirname,'../package.json')));
+const { luaNew, luaClose, luaDoString, luaTableForEach, luaTableToString } = require(binding_path);
 
 const luaDoStringAsync = promisify(luaDoString);
 

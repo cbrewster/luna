@@ -1,23 +1,29 @@
 {
   "name": "@cbrewster/luna",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Node.js bindings to Lua",
   "license": "MIT",
   "author": {
     "name": "Connor Brewster",
     "email": "cbrewster@hey.com"
   },
-  "main": "lib/index.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/mjs/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/mjs/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
   "scripts": {
-    "build": "cargo-cp-artifact -nc ./bin-package/index.node -- cargo build --message-format=json-render-diagnostics && tsc",
-    "build-debug": "npm run build",
-    "build-release": "cargo-cp-artifact -nc ./bin-package/index.node -- cargo build --message-format=json-render-diagnostics --release && tsc",
-    "install": "npm run build-release",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && cargo-cp-artifact -nc ./bin-package/index.node -- cargo build --message-format=json-render-diagnostics --release&& ./fixup.sh",
+    "install": "npm run build",
     "test": "cargo test",
     "clean": "rm -rf lib target dist bin-package build"
   },
   "dependencies": {
-    "@mapbox/node-pre-gyp": "^1.0.8"
+    "@mapbox/node-pre-gyp": "^1.0.8",
+    "node-pre-gyp": "^0.17.0"
   },
   "devDependencies": {
     "@types/node": "^17.0.21",
@@ -35,5 +41,5 @@
     "host": "https://github.com/cbrewster/luna/releases/download/",
     "package_name": "{module_name}-v{version}-{node_abi}-{platform}-{arch}-{libc}.tar.gz",
     "remote_path": "{version}"
-  } 
+  }
 }

@@ -45,11 +45,7 @@ const cargoTarget = process.env.CARGO_BUILD_TARGET;
 //    shell.exec("yarn test");
 // }
 
-shell.mkdir("./dist");
-shell.cp(["README.md", "package.json", "LICENSE"], "./dist");
-
-shell.mkdir("./dist/lib");
-shell.cp(["lib/index.d.ts", "lib/index.js"], "./dist/lib");
+// Note: We have to customize package.json because `node-pre-gyp install --fallback-to-build` does not work with neon.
 
 //Add a NPM install script to the package.json that we push to NPM so that when consumers pull it down it
 //runs the expected node-pre-gyp step.
