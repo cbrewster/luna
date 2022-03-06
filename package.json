@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && cargo-cp-artifact -nc ./bin-package/index.node -- cargo build --message-format=json-render-diagnostics --release&& ./fixup.sh",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && cargo-cp-artifact -nc ./bin-package/index.node -- cargo build --message-format=json-render-diagnostics --release && bash ./fixup.sh",
     "install": "npm run build",
     "test": "cargo test",
     "clean": "rm -rf lib target dist bin-package build"
