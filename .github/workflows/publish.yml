@@ -1,0 +1,110 @@
+# Creates and publishes assets for a new release.
+# To manually trigger this workflow, create a release in the GitHub UI.
+
+name: Publish
+
+'on':
+  # https://docs.github.com/en/developers/webhooks-and-events/webhook-events-and-payloads#release
+  release:
+    types:
+      - created
+
+env:
+  # hack to get dynlibs working with musl
+  # https://github.com/rust-lang/rust/pull/55163#issuecomment-436631090
+  RUSTFLAGS: -C target-feature=-crt-static
+
+jobs:
+  publish-github:
+    runs-on: ${{ matrix.system.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        node_version:
+          - 12
+          - 14
+          - 16
+        system:
+          - os: macos-10.15
+            target: x86_64-apple-darwin
+          - os: ubuntu-20.04
+            target: x86_64-unknown-linux-gnu
+          - os: windows-2019
+            target: x86_64-pc-windows-msvc
+        include:
+          # only node 15+ supports arm64 natively, so we only need to build 16 for now
+          - system:
+              os: [self-hosted, macOS, ARM64]
+              target: aarch64-apple-darwin
+            node_version: 16
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - uses: c-hive/gha-npm-cache@v1
+      - uses: actions/setup-node@v2.1.5
+        with:
+          node-version: ${{ matrix.node_version }}
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          target: ${{ matrix.system.target }}
+          override: true
+      - name: Install modules
+        run: npm install --ignore-scripts
+      - name: Build
+        id: build
+        # Use bash, even on Windows.
+        shell: bash
+        env:
+          PRE_GYP_PLATFORM: ${{ matrix.system.pre_gyp_platform }}
+          PRE_GYP_ARCH: ${{ matrix.system.pre_gyp_arch }}
+          CARGO_BUILD_TARGET: ${{ matrix.system.target }}
+        run: |
+          node publish.js
+          cd bin-package
+          echo "::set-output name=asset::$(echo *.tar.gz)"
+      - name: Upload release asset
+        run: gh release upload ${{ github.event.release.tag_name }} bin-package/${{ steps.build.outputs.asset }} --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-npm:
+    needs:
+      - publish-github
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - uses: c-hive/gha-npm-cache@v1
+      - uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 14
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Install modules
+        run: npm install --ignore-scripts
+      - run: npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish NPM release
+        run: |
+          set -x
+          # If it's not a simple 1.2.3 version, then it's a prerelease of some kind.
+          if [[ ${{ github.event.release.tag_name }} =~ .*-.* ]] ; then
+            PRE="--prerelease"
+          fi
+          node publish.js --publish "${PRE}"
+      - name: Finalize GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.WORKFLOW_PAT }}
+          prerelease: ${{ contains(github.event.release.name, '-') }}
+          allowUpdates: true
+          tag: ${{ github.event.release.tag_name }}
+          name: ${{ github.event.release.name }}

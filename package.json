@@ -9,12 +9,12 @@
   },
   "main": "lib/index.js",
   "scripts": {
-    "build": "cargo-cp-artifact -nc lib/index.node -- cargo build --message-format=json-render-diagnostics && tsc",
+    "build": "cargo-cp-artifact -nc ./bin-package/index.node -- cargo build --message-format=json-render-diagnostics && tsc",
     "build-debug": "npm run build",
-    "build-release": "cargo-cp-artifact -nc lib/index.node -- cargo build --message-format=json-render-diagnostics --release && tsc",
+    "build-release": "cargo-cp-artifact -nc ./bin-package/index.node -- cargo build --message-format=json-render-diagnostics --release && tsc",
     "install": "npm run build-release",
     "test": "cargo test",
-    "clean": "rm -rf lib target dist",
+    "clean": "rm -rf lib target dist bin-package build",
     "publish": "node publish.js"
   },
   "dependencies": {
