@@ -1,0 +1,40 @@
+{
+  "name": "@cbrewster/luna",
+  "version": "0.0.2",
+  "description": "Node.js bindings to Lua",
+  "license": "MIT",
+  "author": {
+    "name": "Connor Brewster",
+    "email": "cbrewster@hey.com"
+  },
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "cargo-cp-artifact -nc lib/index.node -- cargo build --message-format=json-render-diagnostics && tsc",
+    "build-debug": "npm run build",
+    "build-release": "cargo-cp-artifact -nc lib/index.node -- cargo build --message-format=json-render-diagnostics --release && tsc",
+    "install": "npm run build-release",
+    "test": "cargo test",
+    "clean": "rm -rf lib target dist",
+    "publish": "node publish.js"
+  },
+  "dependencies": {
+    "@mapbox/node-pre-gyp": "^1.0.8"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.21",
+    "cargo-cp-artifact": "^0.1",
+    "shelljs": "^0.8.5",
+    "typescript": "^4.6.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cbrewster/luna"
+  },
+  "binary": {
+    "module_name": "index",
+    "module_path": "./bin-package",
+    "host": "https://github.com/cbrewster/luna/releases/download/",
+    "package_name": "{module_name}-v{version}-{node_abi}-{platform}-{arch}-{libc}.tar.gz",
+    "remote_path": "{version}"
+  } 
+}

@@ -1,0 +1,71 @@
+entrypoint = "index.js"
+run = "npm run build && node examples/index.js"
+
+[nix]
+channel = "stable-21_11"
+
+[env]
+XDG_CONFIG_HOME = "/home/runner/.config"
+
+[packager]
+language = "nodejs"
+
+  [packager.features]
+  packageSearch = true
+  guessImports = true
+  enabledForHosting = false
+
+[unitTest]
+language = "nodejs"
+
+[languages.javascript]
+pattern = "**/{*.js,*.jsx,*.ts,*.tsx}"
+
+  [languages.javascript.languageServer]
+  start = [ "typescript-language-server", "--stdio" ]
+
+[languages.rust]
+pattern = "**/*.rs"
+
+  [languages.rust.languageServer]
+  start = "rust-analyzer"
+
+[debugger]
+support = true
+
+  [debugger.interactive]
+  transport = "localhost:0"
+  startCommand = [ "dap-node" ]
+
+    [debugger.interactive.initializeMessage]
+    command = "initialize"
+    type = "request"
+
+      [debugger.interactive.initializeMessage.arguments]
+      clientID = "replit"
+      clientName = "replit.com"
+      columnsStartAt1 = true
+      linesStartAt1 = true
+      locale = "en-us"
+      pathFormat = "path"
+      supportsInvalidatedEvent = true
+      supportsProgressReporting = true
+      supportsRunInTerminalRequest = true
+      supportsVariablePaging = true
+      supportsVariableType = true
+
+    [debugger.interactive.launchMessage]
+    command = "launch"
+    type = "request"
+    
+      [debugger.interactive.launchMessage.arguments]  
+      args = []
+      console = "externalTerminal"
+      cwd = "."
+      environment = []
+      pauseForSourceMap = false
+      program = "./index.js"
+      request = "launch"
+      sourceMaps = true
+      stopOnEntry = false
+      type = "pwa-node"
