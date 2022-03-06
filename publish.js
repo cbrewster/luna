@@ -30,7 +30,7 @@ const isPreRelease = process.argv.slice(2).indexOf("--prerelease") !== -1;
 // Cleanup any previous Rust builds, update deps, and compile
 shell.exec("npm install --ignore-scripts");
 shell.exec("npm run clean");
-shell.exec("npm run build-release");
+shell.exec("npm run build");
 
 // As long as rustc's output is consistent, this should be fine
 const host = shell
