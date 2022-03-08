@@ -19,9 +19,15 @@ language = "nodejs"
 language = "nodejs"
 
 [languages.javascript]
-pattern = "**/{*.js,*.jsx,*.ts,*.tsx}"
+pattern = "**/{*.js,*.jsx}"
 
   [languages.javascript.languageServer]
+  start = [ "typescript-language-server", "--stdio" ]
+
+[languages.typescript]
+pattern = "**/{*.ts,*.tsx}"
+
+  [languages.typescript.languageServer]
   start = [ "typescript-language-server", "--stdio" ]
 
 [languages.rust]
