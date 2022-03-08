@@ -62,6 +62,5 @@ if (shouldPublish) {
     }
 }
 shell.exec(publishCmd);
-shell.popd();
 
 shell.echo("publish.js COMPLETE");
