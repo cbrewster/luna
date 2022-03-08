@@ -45,14 +45,6 @@ const cargoTarget = process.env.CARGO_BUILD_TARGET;
 //    shell.exec("yarn test");
 // }
 
-// Note: We have to customize package.json because `node-pre-gyp install --fallback-to-build` does not work with neon.
-
-//Add a NPM install script to the package.json that we push to NPM so that when consumers pull it down it
-//runs the expected node-pre-gyp step.
-const npmPackageJson = require("./dist/package.json");
-npmPackageJson.scripts.install = "node-pre-gyp install";
-fs.writeFileSync("./dist/package.json", JSON.stringify(npmPackageJson, null, 2));
-
 //Use a fully qualified path to pre-gyp binary for Windows support
 const cwd = shell.pwd().toString();
 const replacementArch = process.env.PRE_GYP_ARCH ? `--target_arch=${process.env.PRE_GYP_ARCH}` : "";
@@ -60,7 +52,6 @@ const replacementPlatform = process.env.PRE_GYP_PLATFORM ? `--target_platform=${
 shell.exec(`${cwd}/node_modules/@mapbox/node-pre-gyp/bin/node-pre-gyp package ${replacementArch} ${replacementPlatform}`);
 var tgz = shell.exec("find ./build -name *.tar.gz");
 shell.cp(tgz, "./bin-package/");
-shell.pushd("./dist");
 
 var publishCmd = "echo 'Skipping publishing to npm...'"
 if (shouldPublish) {

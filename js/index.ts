@@ -1,13 +1,13 @@
-const { promisify } = require("util");
+import { promisify } from "util";
 
-const binary = require('node-pre-gyp');
-const path = require('path');
-const binding_path = binary.find(path.resolve(path.join(__dirname,'../package.json')));
+const { find } = require('@mapbox/node-pre-gyp');
+import { resolve, join } from 'path';
+const binding_path = find(resolve(join(__dirname,'../package.json')));
 const { luaNew, luaClose, luaDoString, luaTableForEach, luaTableToString } = require(binding_path);
 
 const luaDoStringAsync = promisify(luaDoString);
 
-type LuaValue = null | string | number | LuaTable;
+export type LuaValue = null | string | number | LuaTable;
 
 function convertLua(val: any): LuaValue {
     if (val == null) {
@@ -22,7 +22,7 @@ function convertLua(val: any): LuaValue {
     return val as LuaValue;
 }
 
-class Lua {
+export class Lua {
     private lua: any;
     
     constructor() {
@@ -38,7 +38,7 @@ class Lua {
     }
 }
 
-class LuaTable {
+export class LuaTable {
     table: any;
 
     constructor(table: any) {
@@ -55,5 +55,3 @@ class LuaTable {
         return luaTableToString.call(this.table);
     }
 }
-
-module.exports = { Lua, LuaTable };

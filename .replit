@@ -1,4 +1,4 @@
-entrypoint = "index.js"
+entrypoint = "src/lib.rs"
 run = "npm run build && node examples/index.js"
 
 [nix]

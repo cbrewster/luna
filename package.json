@@ -1,23 +1,25 @@
 {
   "name": "@cbrewster/luna",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Node.js bindings to Lua",
   "license": "MIT",
   "author": {
     "name": "Connor Brewster",
     "email": "cbrewster@hey.com"
   },
-  "main": "dist/cjs/index.js",
-  "module": "dist/mjs/index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./mjs/index.js",
-      "require": "./cjs/index.js"
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && cargo-cp-artifact -nc ./bin-package/index.node -- cargo build --message-format=json-render-diagnostics --release && bash ./fixup.sh",
-    "install": "npm run build",
+    "build": "tsup js/index.ts --format cjs,esm --dts --clean && cargo-cp-artifact -nc ./bin-package/index.node -- cargo build --message-format=json-render-diagnostics --release",
+    "install": "node-pre-gyp install || npm run build",
     "test": "cargo test",
     "clean": "rm -rf lib target dist bin-package build"
   },
@@ -29,6 +31,7 @@
     "@types/node": "^17.0.21",
     "cargo-cp-artifact": "^0.1",
     "shelljs": "^0.8.5",
+    "tsup": "^5.12.0",
     "typescript": "^4.6.2"
   },
   "repository": {
