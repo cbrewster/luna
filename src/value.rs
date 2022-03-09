@@ -29,6 +29,34 @@ impl LuaValue {
             _ => LuaValue::Unsupported,
         }
     }
+
+    pub fn from_js<'js>(cx: &mut impl Context<'js>, js_val: Handle<JsValue>) -> NeonResult<Self> {
+        if let Ok(_) = js_val.downcast::<JsNull, _>(cx) {
+            return Ok(LuaValue::Nil);
+        }
+
+        if let Ok(val) = js_val.downcast::<JsBoolean, _>(cx) {
+            return Ok(LuaValue::Boolean(val.value(cx)));
+        }
+        
+        if let Ok(val) = js_val.downcast::<JsNumber, _>(cx) {
+            return Ok(LuaValue::Number(val.value(cx)));
+        }
+        
+        if let Ok(val) = js_val.downcast::<JsString, _>(cx) {
+            return Ok(LuaValue::String(val.value(cx)));
+        }
+        
+        if let Ok(val) = js_val.downcast::<JsString, _>(cx) {
+            return Ok(LuaValue::String(val.value(cx)));
+        }
+
+        if let Ok(val) = js_val.downcast::<JsBox<LuaTableHandle>, _>(cx) {
+            return Ok(LuaValue::Table((**val).clone()));
+        }
+
+        cx.throw_error("Unsupported type")
+    }
 }
 
 impl LuaValue {
@@ -44,8 +72,22 @@ impl LuaValue {
                 let typ = cx.string("table");
                 obj.set(cx, "__type", typ)?;
                 obj.upcast()
-            },
+            }
             LuaValue::Unsupported => cx.throw_error("unsupported type")?,
+        })
+    }
+
+    pub fn to_lua<'lua>(&self, lua_ctx: &mut LuaContext<'lua>) -> rlua::Result<rlua::Value<'lua>> {
+        Ok(match self {
+            LuaValue::Nil => rlua::Value::Nil,
+            LuaValue::Boolean(val) => rlua::Value::Boolean(*val),
+            LuaValue::Integer(val) => rlua::Value::Integer(*val),
+            LuaValue::Number(val) => rlua::Value::Number(*val),
+            LuaValue::String(val) => rlua::Value::String(lua_ctx.ctx.create_string(val)?),
+            LuaValue::Table(table) => {
+                rlua::Value::Table(lua_ctx.get_table(&table).expect("stale handle").clone())
+            }
+            LuaValue::Unsupported => todo!(),
         })
     }
 }

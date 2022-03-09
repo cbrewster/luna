@@ -93,6 +93,20 @@ impl Lua {
     ) -> Result<(), mpsc::SendError<LuaMessage>> {
         self.tx.send(LuaMessage::Callback(Box::new(callback)))
     }
+
+    pub fn request<T, F>(&self, callback: F) -> Result<T, Box<dyn std::error::Error>>
+    where
+        T: Send + 'static,
+        F: FnOnce(&mut LuaContext, &Channel) -> T + Send + 'static,
+    {
+        let (tx, rx) = mpsc::channel();
+
+        self.send(move |lua_ctx, channel| {
+            tx.send(callback(lua_ctx, channel)).expect("failed to send");
+        })?;
+
+        Ok(rx.recv()?)
+    }
 }
 
 impl Lua {
@@ -138,5 +152,17 @@ impl Lua {
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
         Ok(cx.undefined())
+    }
+    
+    pub fn js_new_table(mut cx: FunctionContext) -> JsResult<JsBox<LuaTableHandle>> {
+        let lua = cx.this().downcast_or_throw::<JsBox<Lua>, _>(&mut cx)?;
+
+        let table_handle = lua.request(move |lua_ctx, _| {
+            lua_ctx.ctx.create_table().map(|table| lua_ctx.table_handle(table))
+        })
+        .or_else(|err| cx.throw_error(err.to_string()))?
+        .or_else(|err| cx.throw_error(err.to_string()))?;
+
+        Ok(cx.boxed(table_handle))
     }
 }

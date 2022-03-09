@@ -17,6 +17,22 @@ const { Lua, LuaTable } = require('../');
 
   const table = await lua.doString(`return {key = "value", foo = "bar"}`);
   if (table instanceof LuaTable) {
+    console.log("foo is: " + table.get("foo"));
+    table.forEach((key, val) => {
+      console.log(`key: ${key} val: ${val}`);
+    });
+
+    console.log("Set foo = baz");
+    
+    table.set("foo", "baz");
+    table.forEach((key, val) => {
+      console.log(`key: ${key} val: ${val}`);
+    });
+
+    console.log("Set foo = {a = b}")
+    const a = lua.newTable();
+    a.set("a", "b");
+    table.set("foo", a);
     table.forEach((key, val) => {
       console.log(`key: ${key} val: ${val}`);
     });
@@ -24,11 +40,11 @@ const { Lua, LuaTable } = require('../');
   
   const selfReference = await lua.doString("x = {} \n x.self = x \n return x");
   if (selfReference instanceof LuaTable) {
+    console.log("self is: " + selfReference.get("self"));
     selfReference.forEach((key, val) => {
       console.log(`key: ${key} val: ${val}`);
       if (val?.toString() === selfReference.toString()) {
         console.log("we have a cycle!");
-        console.log("Table: ", selfReference.toString());
       }
     });
   }
