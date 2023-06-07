@@ -10,7 +10,7 @@ const {
 
 const luaDoStringAsync = promisify(luaDoString);
 
-export type LuaValue = null | string | number | LuaTable;
+export type LuaValue = null | string | number | LuaTable | Boolean;
 
 // Handles checking output type of lua value and wraps tables in a class.
 function wrapLua(val: any): LuaValue {
