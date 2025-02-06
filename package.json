@@ -1,6 +1,6 @@
 {
   "name": "@cbrewster/luna",
-  "version": "0.0.12",
+  "version": "0.0.13"
   "description": "Node.js bindings to Lua",
   "license": "MIT",
   "author": {
