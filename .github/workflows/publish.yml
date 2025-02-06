@@ -3,7 +3,7 @@
 
 name: Publish
 
-'on':
+"on":
   # https://docs.github.com/en/developers/webhooks-and-events/webhook-events-and-payloads#release
   release:
     types:
@@ -30,6 +30,8 @@ jobs:
             target: x86_64-unknown-linux-gnu
           - os: windows-2019
             target: x86_64-pc-windows-msvc
+          - os: macos-latest
+            target: aarch64-apple-darwin
     steps:
       - uses: actions/checkout@v2
         with:
